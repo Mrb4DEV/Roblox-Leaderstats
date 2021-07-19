@@ -1,0 +1,44 @@
+game.Players.PlayerAdded:Connect(function(player)
+	local leaderstats = Instance.new("Folder")
+	leaderstats.Name = "leaderstats"
+	leaderstats.Parent = player
+
+	local clicks = Instance.new("IntValue")
+	clicks.Name = "Clicks"
+	clicks.Value = 0
+	clicks.Parent = leaderstats
+
+	local rebirths = Instance.new("IntValue")
+	rebirths.Name = "Rebirths"
+	rebirths.Value = 0
+	rebirths.Parent = leaderstats
+	local DSS = game:Getservice("DataStoreService")
+
+	local LocalDataStore = DSS:GetDataStore("LocalDataStore")
+	
+	local data
+	local approved, errortext = pcall(function()
+		data = LocalDataStore:GetAsync(plr.UserId.."-clicks")
+	end)
+
+	if approved then
+		clicks.Value = data
+	else
+		print("Error getting data")
+		warn(errortext)
+	end
+end)
+
+game.Players.PlayerRemoving:Connect(function(plr)
+
+	local approved, errortext = pcall(function()
+		LocalDataStore:SetAsync(plr.UserId.."-clicks",plr.leaderstats.Clicks.Value)		
+	end)
+
+	if approved then
+		print("Player data saved successfully")
+	else
+		print("Error saving data")
+		warn(errortext)
+	end
+end)
